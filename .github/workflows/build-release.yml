@@ -25,8 +25,14 @@ jobs:
         run: dart pub get
       - name: compile exe
         run: dart compile exe bin/stalker_gamma_updater.dart -v -o build/${{ matrix.output-name }}
-      - name: Tarball to maintain casing and permissions
-        run: tar cvf stalker-gamma-updater.tar build/ resources/${{ matrix.artifact-postfix }}
+      - name: Tar to maintain casing and permissions
+        uses: a7ul/tar-action@v1.1.2
+        with:
+          command: c
+          files: |
+            ./build
+            ./resources/${{ matrix.artifact-postfix }}
+          outPath: stalker-gamma-updater.tar
       - uses: actions/upload-artifact@v3
         with:
           name: stalker-gamma-updater-${{ matrix.artifact-postfix }}
