@@ -4,6 +4,9 @@ on: [workflow_dispatch]
 jobs:
   Cross-compile-and-upload:
     strategy:
+      # In the future we may change this to false, so that if one build fails
+      # the other will still continue on.
+      fail-fast: true
       matrix:
         os: [ubuntu-latest, windows-latest]
         include:
@@ -21,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: dart pub get
       - name: compile exe
-        run: dart compile exe -v -o build/${{ matrix.output-name }}
+        run: dart compile exe bin/stalker_gamma_updater.dart -v -o build/${{ matrix.output-name }}
       - name: Tarball to maintain casing and permissions
         run: tar -cvf stalker-gamma-updater.tar build/ resources/${{ matrix.artifact-postfix }}
       - uses: actions/upload-artifact@v3
