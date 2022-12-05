@@ -11,11 +11,14 @@ void main(List<String> arguments) async {
   registerDependencies();
   configuredLogger();
   final log = Logger('MainLogger')..finest('Starting main.');
+  // TODO: Add commands using Dart:args package which will take arguments to these operations.
   const String pathToModList = 'test/mock_modlist.txt';
   const String pathToModPackMakerList = 'test/mock_modpack_maker_list.txt';
   const String destination = 'tmp_out';
   log.finest('Beginnning mod downloads.');
+  // TODO: Add function for downloading the latest Grok modpack definitions.
   await modListDownloader(pathToModList, pathToModPackMakerList, destination);
+  // TODO: Add function for copying Grok mod_addons to their respective places.
   log.finest('Shutting down...');
 }
 

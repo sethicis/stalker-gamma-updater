@@ -67,6 +67,8 @@ Future<bool> modListDownloader(String pathToModList,
       List<Future<void>> futures = [];
       for (var item in chunk) {
         _log.info('Fetching mod data for: ${item.directoryName}');
+        // TODO: Add a step to generate the meta.ini file for modpack list items
+        // in their respective mod directories.
         futures.add(_downloadMod(item).then((zippedMod) =>
             _decompressAndMoveMod(zippedMod, item, destination)));
       }
