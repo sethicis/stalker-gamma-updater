@@ -26,9 +26,9 @@ class ZipExtractionRunner {
         if (value.exitCode == 0) {
           log.info('Extractor exited successfully for: ${zippedFile.path}');
         } else {
-          log.severe('Extractor failed with exit code: ${value.exitCode}');
-          log.severe('Extractor error output: ${value.stderr}');
-          log.severe('Extractor output: ${value.stdout}');
+          log..severe('Extractor failed with exit code: ${value.exitCode}')
+          ..severe('Extractor error output: ${value.stderr}')
+          ..severe('Extractor output: ${value.stdout}');
         }
       });
   }

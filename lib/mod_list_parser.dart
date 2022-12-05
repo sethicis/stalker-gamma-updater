@@ -7,7 +7,9 @@ Future<Map<int, IndexModInfo>> getModListIndexToNameMap(File modList) async {
       final Map<int, IndexModInfo> modInfoMap = {};
       for (var line in lines) {
         final modInfo = _getIndexedModInfo(line);
-        if (modInfo is IndexModInfo) modInfoMap.putIfAbsent(modInfo.index, () => modInfo);
+        if (modInfo is IndexModInfo) {
+          modInfoMap.putIfAbsent(modInfo.index, () => modInfo);
+        }
       }
       return modInfoMap;
     });

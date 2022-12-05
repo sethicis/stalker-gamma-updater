@@ -8,20 +8,31 @@ class ModPackMakerListItem {
   final Uri? downloadUri;
   final String? authorName;
   final String? title;
+  final String? modDbUrl;
+  final List<String>? subDirs;
 
   ModPackMakerListItem({
     required this.downloadUri,
     required this.title,
     required this.authorName,
     required this.lineNumber,
+    required this.modDbUrl,
+    required this.subDirs,
   });
 
-  bool isSectionDivider() {
-    return downloadUri is !Uri;
+  bool get isSectionDivider {
+    return downloadUri is! Uri || !(downloadUri?.isAbsolute ?? false);
   }
 
-  bool isValidMod() {
-    return downloadUri is Uri && authorName is String && title is String;
+  bool get isValidMod {
+    return downloadUri is Uri &&
+        (downloadUri?.isAbsolute ?? false) &&
+        authorName is String &&
+        title is String;
+  }
+
+  bool get hasSubDirectoriesToInstall {
+    return subDirs is List;
   }
 
   String get directoryName {
@@ -29,17 +40,53 @@ class ModPackMakerListItem {
   }
 
   factory ModPackMakerListItem.fromString(String modpackLine, int lineNumber) {
-    final match = parseModPackMakerListLine(modpackLine);
-    if (match is !RegExpMatch) _log.info('Possible ModPack Section Line: $modpackLine'); 
-    return ModPackMakerListItem(downloadUri: match?[1] is String ? Uri.parse(match![1]!) : null, title: match?[3], authorName: match?[2], lineNumber: lineNumber);
+    final parsed = parseModPackMakerListLine(modpackLine);
+    final isModLine = parsed['url'] is String;
+    if (isModLine) {
+      _log.info('Possible ModPack Section Line: $modpackLine');
+    }
+    return ModPackMakerListItem(
+      downloadUri: isModLine ? Uri.parse(parsed['url']!) : null,
+      title: parsed['title'],
+      authorName: parsed['author'],
+      lineNumber: lineNumber,
+      modDbUrl: parsed['modDbUrl'],
+      subDirs: _getSubDirs(parsed['subdirs']),
+    );
   }
 
-  factory ModPackMakerListItem.fromIndexedModInfo(IndexModInfo modInfo, String downloadUrl) {
-    return ModPackMakerListItem(downloadUri: Uri.parse(downloadUrl), title: modInfo.title, authorName: modInfo.author, lineNumber: modInfo.index);
+  factory ModPackMakerListItem.fromIndexedModInfo(
+      IndexModInfo modInfo, String downloadUrl,
+      {String? installDirectories, String? modDbUrl}) {
+    return ModPackMakerListItem(
+      downloadUri: Uri.tryParse(downloadUrl),
+      title: modInfo.title,
+      authorName: modInfo.author,
+      lineNumber: modInfo.index,
+      modDbUrl: modDbUrl,
+      subDirs: _getSubDirs(installDirectories),
+    );
   }
 }
 
-RegExpMatch? parseModPackMakerListLine(String line) {
-  final RegExp reg = RegExp(r'^(https\S+).*-\s+(\w+)\s+(.*?)\s+https');
-  return reg.firstMatch(line);
+Map<String, String?> parseModPackMakerListLine(String line) {
+  final List<String> modMakerLineParts = line.split('\t');
+  final url = modMakerLineParts[0].trim();
+  final subdirs = modMakerLineParts[1].trim();
+  final author = modMakerLineParts[2].replaceFirst(RegExp(r'^\s+-\s+'), '');
+  final title = modMakerLineParts[3].trim();
+  final modDbUrl = modMakerLineParts[4].trim();
+  return {
+    'url': url,
+    'subdirs': subdirs,
+    'author': author,
+    'title': title,
+    'modDbUrl': modDbUrl
+  };
+}
+
+List<String>? _getSubDirs(String? subdirStr) {
+  return (subdirStr?.isNotEmpty ?? false) && subdirStr != '0'
+      ? subdirStr?.split(':')
+      : null;
 }

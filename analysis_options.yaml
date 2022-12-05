@@ -15,13 +15,27 @@ include: package:lints/recommended.yaml
 
 # Uncomment the following section to specify additional rules.
 
-# linter:
-#   rules:
-#     - camel_case_types
+linter:
+  rules:
+    - avoid_dynamic_calls
+    - avoid_slow_async_io
+    - avoid_type_to_string
+    - close_sinks
+    - cancel_subscriptions
+    - comment_references
+    - discarded_futures
+    - test_types_in_equals
+    - always_put_control_body_on_new_line
+    - avoid_positional_boolean_parameters
+    - avoid_void_async
+    - cascade_invocations
+    - deprecated_consistency
+    - directives_ordering
 
-# analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
+
+analyzer:
+  exclude:
+    - resources/**
 
 # For more information about the core and recommended set of lints, see
 # https://dart.dev/go/core-lints

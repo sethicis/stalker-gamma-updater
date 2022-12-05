@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: dart pub get
       - name: compile exe
-        run: dart compile exe bin/stalker_gamma_updater.dart -v -o build/${{ matrix.output-name }}
+        run: dart compile exe bin/cli.dart -v -o build/${{ matrix.output-name }}
       - name: Tar to maintain casing and permissions
         uses: a7ul/tar-action@v1.1.2
         with:
