@@ -133,7 +133,7 @@ Future<void> _decompressAndMoveMod(
     File zippedMod, ModPackMakerListItem item, String destination) async {
   final zipExtractor = GetIt.I<ZipExtractionRunner>();
   final fileSystem = GetIt.I<FileSystem>();
-  final modDir = '$destination/${item.directoryName}';
+  final modDir = './$destination/${item.directoryName}';
   if (item.hasSubDirectoriesToInstall) {
     _log.finest(
         'Extracting Subdirectories: ${item.subDirs} for ${item.directoryName}');
@@ -144,7 +144,7 @@ Future<void> _decompressAndMoveMod(
     for (var dir in item.subDirs!) {
       _copySubfolders(tmpExtractDir.childDirectory(dir), modDir);
     }
-    _copyFilesMatching(tmpExtractDir, ['changelog', 'readme'], modDir);
+    _copyFilesMatching(tmpExtractDir, {'changelog', 'readme'}, modDir);
     // Delete the temporary data
     tmpExtractDir.delete(recursive: true);
   } else {
@@ -157,11 +157,15 @@ void _copySubfolders(Directory source, String target) {
 }
 
 void _copyFilesMatching(
-    Directory searchDir, List<String> searchTerms, String destination) {
+    Directory searchDir, Set<String> searchTerms, String destination) {
   for (var file in searchDir.listSync()) {
     for (var term in searchTerms) {
-      if (file.basename.toLowerCase().startsWith(term)) {
-        file.renameSync('$destination/${file.basename}');
+      final basename = file.basename;
+      if (basename.toLowerCase().startsWith(term)) {
+        // TODO: Look into a better way of doing this.
+        // Workaround is because file.renameSync() reports an OS error claiming
+        // the file is on a different filesystem.
+        GetIt.I<FileSystem>().file(file).copySync('$destination/$basename');
       }
     }
   }
