@@ -1,6 +1,6 @@
 name: stalker_gamma_updater
 description: A simple command line application for updating Stalker G.A.M.M.A.
-version: 0.0.2
+version: 0.0.3
 
 platform:
   linux:
@@ -21,6 +21,7 @@ dependencies:
   logging: ^1.1.0
   io: ^1.0.3
   args: ^2.3.1
+  html: ^0.15.2
 
 dev_dependencies:
   lints: ^2.0.0

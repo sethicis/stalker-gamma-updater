@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:io/io.dart';
 import 'package:logging/logging.dart';
 import 'package:stalker_gamma_updater/configuration_manager.dart';
+import 'package:stalker_gamma_updater/download_client.dart';
 import 'package:stalker_gamma_updater/mod_list_parser.dart';
 import 'package:stalker_gamma_updater/mod_pack_list_item.dart';
 import 'package:stalker_gamma_updater/zip_extraction_runner.dart';
@@ -40,6 +41,7 @@ Future<bool> modListDownloader(String pathToModList,
         modInfoMap = await futureModInfoMap;
       }
       ModPackMakerListItem? modPackListItem;
+      // Does the next indexed mod exist?
       if (modInfoMap.containsKey(i + 1)) {
         final parsed = parseModPackMakerListLine(lines[i]);
         if (parsed['url']?.isNotEmpty ?? false) {
@@ -86,7 +88,8 @@ String? _getMirrorUrl(response) {
 }
 
 Future<File> _downloadMod(ModPackMakerListItem item) async {
-  final client = GetIt.I<http.Client>();
+  // Refactor this in the future to simply the logic and only use HttpClient instead of http.Client
+  final client = GetIt.I<DownloadClientProvider>().urlClient;
 
   _log.finest('Requesting mirror page for: ${item.downloadUri}');
   final response = await client.get(item.downloadUri!);

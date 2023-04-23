@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:get_it/get_it.dart';
@@ -13,7 +15,7 @@ import 'package:test/test.dart';
 import 'mod_list_downloader_test.mocks.dart';
 import 'test_helpers.dart';
 
-@GenerateMocks([http.Client, ZipExtractionRunner])
+@GenerateMocks([http.Client, ZipExtractionRunner, HttpClient])
 void main() {
   group('modListDownloader', () {
     // These are virtual paths used with the MemoryFileSystem for testing
@@ -24,8 +26,12 @@ void main() {
     final mod2DirName = '3- Mod 2 Name - Mod 2 Author';
 
     setUp(() {
-      GetIt.I.registerSingleton<ConfigurationManager>(
-          ConfigurationManager(maxBatchSize: 2, logLevel: Level.INFO));
+      GetIt.I.registerSingleton<ConfigurationManager>(ConfigurationManager(
+          maxBatchSize: 2,
+          logLevel: Level.INFO,
+          modPackDefinitionDestination: 'test_out/modpack_definitions',
+          modPackDefinitionUrl:
+              'https://github.com/Grokitach/Stalker_GAMMA/archive/refs/heads/main.zip'));
       GetIt.I.registerSingleton<http.Client>(MockClient());
       final fileSystem = MemoryFileSystem();
       fileSystem
