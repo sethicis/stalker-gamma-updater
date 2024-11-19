@@ -1,24 +1,28 @@
 import 'package:file/file.dart';
+import 'package:get_it/get_it.dart';
 
-
-Future<Map<int, IndexModInfo>> getModListIndexToNameMap(File modList) async {
-  return modList.readAsLines()
-    .then((List<String> lines) {
-      final Map<int, IndexModInfo> modInfoMap = {};
-      for (var line in lines) {
-        final modInfo = _getIndexedModInfo(line);
-        if (modInfo is IndexModInfo) {
-          modInfoMap.putIfAbsent(modInfo.index, () => modInfo);
-        }
+Future<Map<int, IndexModInfo>> getModListIndexToNameMap(
+    String pathToModList) async {
+  final modList = GetIt.I<FileSystem>().file(pathToModList);
+  return modList.readAsLines().then((List<String> lines) {
+    final Map<int, IndexModInfo> modInfoMap = {};
+    for (var line in lines) {
+      final modInfo = _getIndexedModInfo(line);
+      if (modInfo is IndexModInfo) {
+        modInfoMap.putIfAbsent(modInfo.index, () => modInfo);
       }
-      return modInfoMap;
-    });
+    }
+    return modInfoMap;
+  });
 }
 
 IndexModInfo? _getIndexedModInfo(String line) {
   RegExp re = RegExp(r'^\+(\d+)-\s+(.*)\s+-\s+(\w+)$');
   final match = re.firstMatch(line);
-  return match is RegExpMatch ? IndexModInfo(index: int.parse(match[1]!), title: match[2]!, author: match[3]!) : null;
+  return match is RegExpMatch
+      ? IndexModInfo(
+          index: int.parse(match[1]!), title: match[2]!, author: match[3]!)
+      : null;
 }
 
 class IndexModInfo {

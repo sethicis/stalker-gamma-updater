@@ -1,3 +1,5 @@
- Audio				
+ Audio
 https://www.moddb.com/addons/start/222467	0	 - Grokitach	 Main Menu Theme - Deathcard Cabin	https://www.moddb.com/mods/stalker-anomaly/addons/groks-main-menu-theme-deathcard-cabin
 https://www.moddb.com/addons/start/183466	SCO3 Addon - Anomaly Sounds:SCO3 P.1 Real Mutant Sounds:SCO3 P.2 New Outdoor Sounds:SCO3 P.3 New Underground Sounds	 - Solarint	 Soundscape Overhaul	https://www.moddb.com/mods/stalker-anomaly/addons/soundscape-overhaul-2
+https://github.com/Grokitach/anomaly_fdda/archive/refs/heads/main.zip	\anomaly_fdda-main	 - Feel_Fried	 Food Drugs and Drinks Animations FDDA
+https://www.moddb.com/addons/start/208267	[1.1.0] Grok's Better Sound for Anomaly 1.5.1\bin	 - Grokitach	 Better sound	https://www.moddb.com/mods/stalker-anomaly/addons/10-groks-better-sound-for-anomaly-151

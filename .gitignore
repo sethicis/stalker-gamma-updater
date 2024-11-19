@@ -10,3 +10,4 @@ tmp_out/
 *.mocks.dart
 # Debug file
 modList.txt
+out/

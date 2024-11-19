@@ -30,7 +30,7 @@ void main() {
           reason: 'isValidMod unexpectedly returned false.');
     });
     test('FromString - Section Item', () {
-      const mockString = ' special effects\t\t\t\t';
+      const mockString = ' special effects';
       const lineNumber = 2;
 
       final modPackItem =
@@ -39,6 +39,26 @@ void main() {
       expect(modPackItem.isSectionDivider, true,
           reason:
               'Section divider incorrectly identified as a mod pack list line item.');
+    });
+    test('FromString - GitHub mod', () {
+      const url =
+          'https://github.com/Grokitach/anomaly_fdda/archive/refs/heads/main.zip';
+      const authorName = 'Feel_Fried';
+      const modName = 'Food Drugs and Drinks Animations FDDA';
+      const mockString =
+          // ignore: unnecessary_string_escapes
+          'https://github.com/Grokitach/anomaly_fdda/archive/refs/heads/main.zip	\anomaly_fdda-main	 - Feel_Fried	 Food Drugs and Drinks Animations FDDA';
+
+      final modPackItem = ModPackMakerListItem.fromString(mockString, 4);
+
+      expect(modPackItem.authorName, authorName,
+          reason: 'AuthorName did not expected value');
+      expect(modPackItem.downloadUri.toString(), url,
+          reason: 'DownloadUrl did not match expected value');
+      expect(modPackItem.title, modName,
+          reason: 'Title did not match expected value');
+      expect(modPackItem.lineNumber, 4,
+          reason: 'LineNumber did not match expected value');
     });
     test('FromIndexedModInfo', () {
       const url = 'https://www.foobar.com/things/2222';

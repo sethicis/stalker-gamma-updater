@@ -7,7 +7,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:stalker_gamma_updater/configuration_manager.dart';
 import 'package:stalker_gamma_updater/mod_list_downloader.dart';
-import 'package:stalker_gamma_updater/zip_extraction_runner.dart';
+import 'package:stalker_gamma_updater/utils/zip_extraction_runner.dart';
 import 'package:test/test.dart';
 
 import 'mod_list_downloader_test.mocks.dart';

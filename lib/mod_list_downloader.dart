@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:file/file.dart';
 import 'package:get_it/get_it.dart';
@@ -8,7 +9,7 @@ import 'package:logging/logging.dart';
 import 'package:stalker_gamma_updater/configuration_manager.dart';
 import 'package:stalker_gamma_updater/mod_list_parser.dart';
 import 'package:stalker_gamma_updater/mod_pack_list_item.dart';
-import 'package:stalker_gamma_updater/zip_extraction_runner.dart';
+import 'package:stalker_gamma_updater/utils/zip_extraction_runner.dart';
 
 final _log = Logger('GammaUpdater');
 
@@ -19,10 +20,13 @@ Future<bool> modListDownloader(String pathToModList,
 
   _log.finest(
       'Current working directory is: ${fileSystem.currentDirectory.path}');
-  final modListFile = fileSystem.file(pathToModList);
-  final futureModInfoMap = getModListIndexToNameMap(modListFile);
+
+  final futureModInfoMap =
+      Isolate.run(() => getModListIndexToNameMap(pathToModList));
   final modPackMakerListFile = fileSystem.file(pathToModPackMakerList);
+
   _log.info('Obtained modListFile');
+
   await modPackMakerListFile.readAsLines().then((List<String> lines) async {
     final batchSize = GetIt.I<ConfigurationManager>().maxBatchSize;
     List<ModPackMakerListItem> currentChunk = [];
@@ -32,14 +36,19 @@ Future<bool> modListDownloader(String pathToModList,
       if (currentChunk.length > batchSize) {
         _log.finest(
             'Changing over to new chunk. Max batch currently: $batchSize, previous chunk size: ${currentChunk.length}');
+
         lineChunks.add(currentChunk);
         currentChunk = [];
       }
+
       _log.finest('Converting ModPack line #$i: "${lines[i]}"');
+
       if (modInfoMap is! Map<int, IndexModInfo>) {
         modInfoMap = await futureModInfoMap;
       }
+
       ModPackMakerListItem? modPackListItem;
+
       if (modInfoMap.containsKey(i + 1)) {
         final parsed = parseModPackMakerListLine(lines[i]);
         if (parsed['url']?.isNotEmpty ?? false) {
@@ -54,14 +63,17 @@ Future<bool> modListDownloader(String pathToModList,
       } else {
         modPackListItem = ModPackMakerListItem.fromString(lines[i], i + 1);
       }
+
       if (modPackListItem?.isValidMod ?? false) {
         _log.finest('Adding modPackItem to chunk.');
         currentChunk.add(modPackListItem!);
       }
     }
     lineChunks.add(currentChunk);
+
     _log.finest(
         'Beginning process of chunked lines. Number of chunks to process: ${lineChunks.length}');
+
     for (var chunk in lineChunks) {
       _log.finest('Processing chunk');
       List<Future<void>> futures = [];
@@ -103,11 +115,6 @@ Future<File> _downloadMod(ModPackMakerListItem item) async {
   final fileSystem = GetIt.I<FileSystem>();
   final location = mirrorResponse.redirects.last.location.pathSegments.last;
   final contentLength = mirrorResponse.contentLength;
-  if (location is! String) {
-    _log.severe(
-        'Could not find location header value for mirror response of: ${item.directoryName}');
-    throw ('ERROR: Why is the location header missing?!');
-  }
 
   final compressedFileName = Uri.parse(location).pathSegments.last;
   final outfileName =

@@ -71,11 +71,23 @@ class ModPackMakerListItem {
 
 Map<String, String?> parseModPackMakerListLine(String line) {
   final List<String> modMakerLineParts = line.split('\t');
+  if (modMakerLineParts.length == 1) {
+    return {
+      'url': null,
+      'subdirs': null,
+      'author': null,
+      'title': null,
+      'modDbUrl': null
+    };
+  }
   final url = modMakerLineParts[0].trim();
   final subdirs = modMakerLineParts[1].trim();
   final author = modMakerLineParts[2].replaceFirst(RegExp(r'^\s+-\s+'), '');
   final title = modMakerLineParts[3].trim();
-  final modDbUrl = modMakerLineParts[4].trim();
+  // Get the modDbUrl from the 4th index of modMakerLineParts,
+  // if the index position is set.
+  final modDbUrl =
+      modMakerLineParts.length > 4 ? modMakerLineParts[4].trim() : null;
   return {
     'url': url,
     'subdirs': subdirs,
